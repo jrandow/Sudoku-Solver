@@ -12,8 +12,8 @@ class Sudoku():
         self.puzzle = puzzle
         self.list_label = list_label
         self.do_save_puzzle = True
-        #self.default_puzzle = list(map(list, puzzle))
-        #self.puzzle_save = [] #this list will contain a structured set of save states, which can be refered, TODO: work with this
+        self.guessed_numbers = [[[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[]]]
+        self.guessed = 0
 
 
     def draw(self):
@@ -63,50 +63,27 @@ class Sudoku():
             
         blocks = list([block1,block2,block3,block4,block5,block6,block7,block8,block9]) 
 
-        # if there is a single possbible number: update the puzzle and SAVE this state
-        for row in range(len(self.puzzle)):
-            for col in range(len(self.puzzle)):
-                if self.puzzle[row][col] == 0:
-                    numbers = self.possibleNumbers(row,col,rows,cols,blocks)
-                    if len(numbers) == 1:
-                        self.puzzle[row][col] = numbers[0]
-                        # self.puzzle_save.append(self.puzzle)
-                        return
-        
-        #if no single possible number is found: iterate through puzzle, find spot with least possible numbers and get on from the possbile numbers
-        #TODO: when this work, integrate it into the above for loop
-        for n in range(2,10):   #iterate through the amount (n) of possible numbers, !when integrating this onto above maybe start this iteration at 1
+        for n in range(1,10):
             for row in range(len(self.puzzle)):
                 for col in range(len(self.puzzle)):
                     if self.puzzle[row][col] == 0:
                         numbers = self.possibleNumbers(row,col,rows,cols,blocks)
-                        if len(numbers) == n:
+                        if len(numbers) == 1:
                             if self.do_save_puzzle:
                                 self.puzzle_save = list(map(list, self.puzzle))
                                 self.do_save_puzzle = False
-                            self.puzzle[row][col] = random.choice(numbers)
+                            self.puzzle[row][col] = numbers[0]
+                            # self.puzzle_save.append(self.puzzle)
+                            return #in case n = 1
+                        # the following only happens when there is no unique possible number
+                        if len(numbers) == n: #beginning with n = 2
+                            self.guess = random.choice(numbers)
+                            self.puzzle[row][col] = self.guess
                             return
-                            # try:
-                            #     self.puzzle[row][col] = random.choice(numbers)
-                            #     return
-                            # except IndexError:                  #IndexError occurs when numbers is empty meaning there is no possible number meaning there was an error
-                            #     self.puzzle = list(map(list, self.default_puzzle)) # maybe want to increase this number if we get back ?
-                            #     return
-                        #if len(numbers) == 0:
-                            #self.puzzle = list(map(list, self.puzzle_save))
+
+        self.guessed_numbers[row][col].append(self.guess) # the last guessed (but only the very last for sure) number was wrong
+        self.guessed += 1
         self.puzzle = list(map(list, self.puzzle_save))
-        include guessedNumbers(row,col,randomchoice(numbers)) # save guessed numbers which did not work and don't use them again (guessed numbers for each)
-        # or include it in the possibleNumbers function
-
-
-        # for row in range(len(self.puzzle)):
-        #     for col in range(len(self.puzzle)):
-        #         if self.puzzle[row][col] == 0:
-        #             numbers, amount = self.possibleNumbers(row,col,rows,cols,blocks)
-        #             try:
-        #                 self.puzzle[row][col] = random.choice(numbers)
-        #             except IndexError:                  #IndexError occurs when numbers is empty meaning there is no possible number meaning there was an error
-        #                 self.puzzle = self.default_puzzle 
 
 
     def possibleNumbers(self,row,col,rows,cols,blocks):
@@ -134,7 +111,7 @@ class Sudoku():
             matching_block = blocks[8]
 
         for nr in range(1,10):
-            if nr not in matching_row and nr not in matching_col and nr not in matching_block:
+            if nr not in matching_row and nr not in matching_col and nr not in matching_block and nr not in self.guessed_numbers[row][col]:
                 numbers.append(nr)
                 
         return numbers
@@ -158,6 +135,7 @@ class Sudoku():
             if freeSpaces == 0:
                 print("The Sudoku has been solved!")
                 print("It took", iterations, "iterations.")
+                print(self.guessed, "time(s) a number has been guessed.")
                 break
 
             if iterations == 10000:
@@ -165,5 +143,5 @@ class Sudoku():
                 print("The Sudoku could not be solved. Try again with another one.")
                 break
 
-            self.fillBoard() #TODO: change to self.puzzle ?
+            self.fillBoard()
             iterations += 1
