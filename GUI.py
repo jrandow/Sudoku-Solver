@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sudokusolver_GUI
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
+import time
 
 
 class Ui_MainWindow(object):
@@ -842,7 +843,30 @@ class Ui_MainWindow(object):
             else:
                 list_label_content.append(int(label.text()))
         export_list = [list_label_content[x:x+9] for x in range(0, len(list_label_content), 9)]
-        sudokusolver_GUI.Sudoku(export_list, self.list_label).solveSudoku()
+        
+        solve_me = sudokusolver_GUI.Sudoku(export_list, self.list_label)
+        iterations = 0
+        while True:
+            solve_me.draw()
+            ui.update_idletasks()
+            ui.update()
+            time.sleep(0.1) # to see what happens
+            freeSpaces = solve_me.countZeros()
+            #print("There are", freeSpaces, "free spaces left.")
+
+            if freeSpaces == 0:
+                print("The Sudoku has been solved!")
+                print("It took", iterations, "iterations.")
+                print(solve_me.guessed, "time(s) a number has been guessed.")
+                break
+
+            if iterations == 10000:
+                print("It took", iterations, "iterations.")
+                print("The Sudoku could not be solved. Try again with another one.")
+                break
+
+            solve_me.fillBoard()
+            iterations += 1
 
 
     def clear(self):

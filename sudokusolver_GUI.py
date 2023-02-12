@@ -124,24 +124,24 @@ class Sudoku():
         return counter
 
 
-    def solveSudoku(self):
-        iterations = 0
-        while True:
-            self.draw()
-            #time.sleep(1) # to see what happens
-            freeSpaces = self.countZeros()
-            #print("There are", freeSpaces, "free spaces left.")
+    # def solveSudoku(self):
+    #     iterations = 0
+    #     while True:
+    #         self.draw()
+    #         #time.sleep(0.01) # to see what happens
+    #         freeSpaces = self.countZeros()
+    #         #print("There are", freeSpaces, "free spaces left.")
 
-            if freeSpaces == 0:
-                print("The Sudoku has been solved!")
-                print("It took", iterations, "iterations.")
-                print(self.guessed, "time(s) a number has been guessed.")
-                break
+    #         if freeSpaces == 0:
+    #             print("The Sudoku has been solved!")
+    #             print("It took", iterations, "iterations.")
+    #             print(self.guessed, "time(s) a number has been guessed.")
+    #             break
 
-            if iterations == 10000:
-                print("It took", iterations, "iterations.")
-                print("The Sudoku could not be solved. Try again with another one.")
-                break
+    #         if iterations == 10000:
+    #             print("It took", iterations, "iterations.")
+    #             print("The Sudoku could not be solved. Try again with another one.")
+    #             break
 
-            self.fillBoard()
-            iterations += 1
+    #         self.fillBoard()
+    #         iterations += 1
