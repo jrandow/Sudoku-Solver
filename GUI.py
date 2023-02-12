@@ -1,4 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
+from PyQt5.QtCore import QTimer
 import sudokusolver_GUI
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
@@ -845,12 +847,26 @@ class Ui_MainWindow(object):
         export_list = [list_label_content[x:x+9] for x in range(0, len(list_label_content), 9)]
         
         solve_me = sudokusolver_GUI.Sudoku(export_list, self.list_label)
+
+        self.i = 0
+        # add QLabel
+        self.qLbl = QLabel('Not yet initialized')
+        # make QTimer
+        self.qTimer = QTimer()
+        # set interval to 1 s
+        self.qTimer.setInterval(1000) # 1000 ms = 1 s
+        # connect timeout signal to signal handler
+        self.qTimer.timeout.connect(solve_me.draw)
+        # start timer
+        self.qTimer.start()
+
         iterations = 0
         while True:
             solve_me.draw()
-            ui.update_idletasks()
-            ui.update()
-            time.sleep(0.1) # to see what happens
+            # root.update_idletasks()
+            # root.update()
+            time.sleep(1) # to see what happens
+            MainWindow.show()
             freeSpaces = solve_me.countZeros()
             #print("There are", freeSpaces, "free spaces left.")
 
